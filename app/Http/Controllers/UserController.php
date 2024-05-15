@@ -4,95 +4,77 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $users = User::where('role', '<>', 'superadmin')->get();
-        return response()->json(['users' => $users]);
-    }
-
-    public function show(User $user)
-    {
-        return response()->json(['user' => $user]);
+        return User::all();
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'username' => 'required|unique:users',
-            'patron_id' => 'required|unique:users',
-            'department' => 'required',
-            'position' => 'required',
-            'password' => 'required',
-            'first_name' => 'required',
-            'middle_name' => 'required',
-            'last_name' => 'required',
-            'ext_name' => 'nullable',
+        $validated = $request->validate([
+            'username' => 'required|string|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string',
+            'department' => 'nullable|string',
+            'position' => 'nullable|string',
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'ext_name' => 'nullable|string|max:255',
+            'access' => 'required|array',
         ]);
 
         $user = User::create([
-            'username' => $request->username,
-            'patron_id' => $request->patron_id,
-            'role' => 'admin',
-            'department' => $request->department,
-            'position' => $request->position,
-            'password' => Hash::make($request->password),
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name' => $request->last_name,
-            'ext_name' => $request->ext_name,
+            'username' => $validated['username'],
+            'password' => bcrypt($validated['password']),
+            'role' => $validated['role'],
+            'department' => $validated['department'],
+            'position' => $validated['position'],
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'],
+            'last_name' => $validated['last_name'],
+            'ext_name' => $validated['ext_name'],
+            'access' => $validated['access'],
         ]);
 
-        return response()->json([
-            'message'=> 'User created successfully',
-            'data'=> $user
-        ]);
+        return response()->json($user, 201);
     }
 
-    public function update(Request $request, $id)
+    public function show(User $user)
     {
-        $user = User::findOrFail($id);
-
-        $request->validate([
-            'username' => 'required|unique:users,username,'.$user->id,
-            'patron_id' => 'required|unique:users,patron_id,'.$user->id,
-            'department' => 'required',
-            'position' => 'required',
-            'password' => 'nullable',
-            'first_name' => 'required',
-            'middle_name' => 'required',
-            'last_name' => 'required',
-            'ext_name' => 'nullable',
-        ]);
-
-        $user->update([
-            'patron_id' => $request->patron_id,
-            'role' => 'admin',
-            'department' => $request->department,
-            'position' => $request->position,
-            'password' => Hash::make($request->password),
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name' => $request->last_name,
-            'ext_name' => $request->ext_name,
-        ]);
-
-        return response()->json([
-            'message'=> 'User updated successfully',
-            'data'=> $user->fresh()
-        ]);
+        return $user;
     }
 
-    public function destroy($id)
+    public function update(Request $request, User $user)
     {
-        $user = User::findOrFail($id);
+        $validated = $request->validate([
+            'username' => 'sometimes|string|max:255|unique:users,username,' . $user->id,
+            'password' => 'sometimes|string|min:8|confirmed',
+            'role' => 'sometimes|string',
+            'department' => 'nullable|string',
+            'position' => 'nullable|string',
+            'first_name' => 'sometimes|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'sometimes|string|max:255',
+            'ext_name' => 'nullable|string|max:255',
+            'access' => 'sometimes|array',
+        ]);
+
+        if (isset($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return response()->json($user, 200);
+    }
+
+    public function destroy(User $user)
+    {
         $user->delete();
-
-        return response()->json([
-            'message'=> 'User deleted successfully',
-        ]);
+        return response()->json(null, 204);
     }
 }

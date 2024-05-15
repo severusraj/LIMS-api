@@ -4,8 +4,10 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\LockerController;
 use App\Http\Controllers\LockersLogController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware;
 
 use App\Http\Controllers\AuthController, App\Http\Controllers\CatalogingLogController, App\Http\Controllers\ArticleController,
 App\Http\Controllers\BookController, App\Http\Controllers\PeriodicalController, App\Http\Controllers\ProjectController,
@@ -17,7 +19,6 @@ use App\Http\Controllers\CatalogingFilterController;
 use App\Http\Controllers\CatalogingCategoryController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\AcademicProjectController;
-use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\AnnouncementController;
 
 Route::get('/', function (Request $request) {
@@ -104,11 +105,11 @@ Route::get('/test', function( ) {
 
 //Routes for Personnels
 Route::middleware(['auth:sanctum', 'check.access:Personnel'])->group(function () {
-    Route::get('/personnels', [PersonnelController::class, 'index']);
-    Route::post('/personnels', [PersonnelController::class, 'store']);
-    Route::get('/personnels/{personnel}', [PersonnelController::class, 'show']);
-    Route::put('/personnels/{personnel}', [PersonnelController::class, 'update']);
-    Route::delete('/personnels/{personnel}', [PersonnelController::class, 'destroy']);
+    Route::get('/personnels', [UserController::class, 'index']);
+    Route::post('/personnels', [UserController::class, 'store']);
+    Route::get('/personnels/{user}', [UserController::class, 'show']);
+    Route::put('/personnels/{user}', [UserController::class, 'update']);
+    Route::delete('/personnels/{user}', [UserController::class, 'destroy']);
 });
 
 //Routes for Circulation
