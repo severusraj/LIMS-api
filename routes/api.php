@@ -11,7 +11,6 @@ use App\Http\Controllers\AuthController, App\Http\Controllers\CatalogingLogContr
 App\Http\Controllers\BookController, App\Http\Controllers\PeriodicalController, App\Http\Controllers\ProjectController,
 App\Http\Controllers\CatalogingReportController;
 
-use App\Http\Controllers\UserController;
 use App\Models\Book;
 use App\Http\Controllers\CirculationLogController;
 use App\Http\Controllers\CatalogingFilterController;
@@ -104,7 +103,7 @@ Route::get('/test', function( ) {
 });
 
 //Routes for Personnels
-Route::middleware(['auth', 'check.access:Personnel'])->group(function () {
+Route::middleware(['auth:sanctum', 'check.access:Personnel'])->group(function () {
     Route::get('/personnels', [PersonnelController::class, 'index']);
     Route::post('/personnels', [PersonnelController::class, 'store']);
     Route::get('/personnels/{personnel}', [PersonnelController::class, 'show']);
@@ -113,7 +112,7 @@ Route::middleware(['auth', 'check.access:Personnel'])->group(function () {
 });
 
 //Routes for Circulation
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/circulation-logs', [CirculationLogController::class, 'index']);
     Route::post('/circulation-logs', [CirculationLogController::class, 'store']);
     Route::get('/circulation-logs/{id}', [CirculationLogController::class, 'show']);
@@ -146,13 +145,13 @@ Route::prefix('cataloging')->group(function () {
 /**
  * @return void
  */
-function authenticationRoutes(): void
-{
+
+    Route::post('/login', [AuthController::class, 'login']);
     Route::post('/login/{subsystem}', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
 //Material routes
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/books', [MaterialController::class, 'getAllBooks']);
         Route::get('/periodicals', [MaterialController::class, 'getAllPeriodicals']);
         Route::get('/articles', [MaterialController::class, 'getAllArticles']);
@@ -195,7 +194,7 @@ function authenticationRoutes(): void
     });
 
     //Announcement routes
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/announcements', [AnnouncementController::class, 'index']);
         Route::post('/announcements', [AnnouncementController::class, 'store']);
         Route::get('/announcements/{announcement}', [AnnouncementController::class, 'show']);
@@ -225,5 +224,4 @@ function authenticationRoutes(): void
             Route::delete('/{lockersLog}', [LockersLogController::class, 'destroy']);
         });
     });
-}
-authenticationRoutes();
+

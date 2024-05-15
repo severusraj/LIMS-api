@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Exception;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -12,7 +12,7 @@ class AuthController extends Controller
     public function login(Request $request, string $subsystem) {
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
 
-            /* 
+            /*
             NOTE:
                 Roles should be in ['superadmin', 'admin', 'staff', 'user']
                 Input your subsystem to control login

@@ -6,5 +6,3 @@
     return response()->json(['Response' => 'Library Information Management System backend is up and running']);
     });
 
-    // Authentication routes
-    authenticationRoutes();

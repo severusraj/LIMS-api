@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,6 +11,7 @@ class Announcement extends Model
     /**
      * @var bool|mixed
      */
+    use HasFactory;
     public mixed $file_path;
     /**
      * The attributes that are mass assignable.
